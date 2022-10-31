@@ -1,0 +1,21 @@
+edition: 1.0.0
+name: serverless-cd
+access: dankun
+
+services:
+  ui:
+    component: ${path(../)}
+    props:
+      serviceName: serverless-cd
+      # githubClientId: test
+      # githubClientSecret: test
+      REGION: cn-hongkong
+      OSS_BUCKET: test
+      OTS_INSTANCE_NAME: serverless-cd
+      DOMAIN: auto
+      DOWNLOAD_CODE_DIR: /tmp/code
+      CD_PIPLINE_YAML: serverless-pipeline.yaml
+      SESSION_EXPIRATION: 5184000000
+      # ACCOUNTID: 
+      # ACCESS_KEY_ID:
+      # ACCESS_KEY_SECRET:

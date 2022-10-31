@@ -1,0 +1,23 @@
+Type: Component
+Name: cd-generate
+Provider:
+  - 云厂商名称 
+Version: 0.0.1
+Description: 简短的描述/介绍
+HomePage: 项目首页地址
+Tags: 
+  - 部署函数
+  - 部署组件
+Category: 开源项目
+Service:
+  服务名:
+    Authorities: #权限描述
+      - 创建函数 # 所需要的权限
+Commands:
+  generate: 生成资源
+Properties:
+  Region: # 参数
+    Description: 参数描述
+    Required: true # 参数必选，true/false
+    Type: # 参数类型
+      - String
