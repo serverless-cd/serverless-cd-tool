@@ -41,6 +41,7 @@ export default class ComponentDemo {
     const defaultValues = _.defaults(constants.OTS_DEFAULT_CONFIG, getExampleValue(cwd));
     const envConfig: IProps = {
       ...defaultValues,
+      ...constants.OTHER_DEFAULT_CONFIG,
       ...props,
       ACCOUNTID: credentials.AccountID,
       ACCESS_KEY_ID: credentials.AccessKeyID,
@@ -77,6 +78,11 @@ export default class ComponentDemo {
     _.forEach(envConfig, (value, key) => envStr += `${key}=${value || ''}\n`);
     fse.outputFileSync(envFilePath, envStr)
 
-    return _.defaults(envConfig, constants.OTHER_DEFAULT_CONFIG);
+    if (!envConfig.GITHUB_CLIENT_ID) {
+      logger.log('Please populate.env with GITHUB_CLIENT_ID before deploy', 'red');
+    }
+    if (!envConfig.GITHUB_CLIENT_SECRET) {
+      logger.log('Please populate.env with GITHUB_CLIENT_SECRET before deploy', 'red');
+    }
   }
 }
