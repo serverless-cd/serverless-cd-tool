@@ -38,7 +38,7 @@ export default class ComponentDemo {
     }
 
     const credentials = await getCred(inputs);
-    const defaultValues = _.defaults(constants.OTS_DEFAULT_CONFIG, getExampleValue(cwd));
+    const defaultValues = _.defaults(constants.OTS_DEFAULT_CONFIG, getExampleValue(cwd || ''));
     const envConfig: IProps = {
       ...defaultValues,
       ...props,
