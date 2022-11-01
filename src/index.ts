@@ -38,7 +38,7 @@ export default class ComponentDemo {
     }
 
     const credentials = await getCred(inputs);
-    const defaultValues = _.defaults(constants.OTS_DEFAULT_CONFIG, getExampleValue(cwd || ''));
+    const defaultValues = _.defaults(constants.OTS_DEFAULT_CONFIG, getExampleValue(cwd));
     const envConfig: IProps = {
       ...defaultValues,
       ...props,
@@ -74,7 +74,7 @@ export default class ComponentDemo {
     logger.info('init ots success');
 
     let envStr = '';
-    _.forEach(envConfig, (value, key) => envStr += `${key}=${value}\n`);
+    _.forEach(envConfig, (value, key) => envStr += `${key}=${value || ''}\n`);
     fse.outputFileSync(envFilePath, envStr)
 
     return _.defaults(envConfig, constants.OTHER_DEFAULT_CONFIG);
