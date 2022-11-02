@@ -10,7 +10,7 @@ services:
       # githubClientId: test
       # githubClientSecret: test
       REGION: cn-hongkong
-      OSS_BUCKET: test
+      OSS_BUCKET: auto
       OTS_INSTANCE_NAME: serverless-cd
       DOMAIN: auto
       DOWNLOAD_CODE_DIR: /tmp/code

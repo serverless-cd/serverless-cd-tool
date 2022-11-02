@@ -6,6 +6,7 @@ import * as constants from './constants';
 import { getCred, getExampleValue } from "./util";
 import Domain from './resource/domain';
 import Ots from './resource/tablestore';
+import Oss from "./resource/oss";
 
 
 export default class ComponentDemo {
@@ -48,6 +49,14 @@ export default class ComponentDemo {
       ACCESS_KEY_SECRET: credentials.AccessKeySecret,
     };
 
+    
+    logger.info('init bucket start');
+    if (_.toLower(envConfig.OSS_BUCKET) === 'auto') {
+      const oss = new Oss(envConfig);
+      await oss.putBucket();
+    }
+    logger.info('init bucket success');
+
     logger.info('init domain start');
     if (_.toLower(envConfig.DOMAIN) === 'auto') {
       const domain = new Domain({
@@ -67,7 +76,7 @@ export default class ComponentDemo {
     } else if (_.includes(envConfig.DOMAIN, '://')) {
       envConfig.DOMAIN = envConfig.DOMAIN.split('://')[1]; // 不带协议
     }
-    logger.info('init domain start');
+    logger.info('init domain success');
 
     logger.info('init ots start');
     const ots = new Ots(envConfig);

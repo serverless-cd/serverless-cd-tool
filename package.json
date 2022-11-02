@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@serverless-devs/core": "latest",
+    "ali-oss": "^6.17.1",
     "dotenv": "^16.0.3",
     "tablestore": "^5.3.0"
   },
