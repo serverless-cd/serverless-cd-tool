@@ -69,6 +69,7 @@ export default class Ots {
     logger.debug(`need handler index: ${indexName}`);
     try {
       await this.client.describeSearchIndex({ tableName, indexName });
+      
       logger.debug(`check index ${indexName} exist, skip create`);
       return;
     } catch (ex) {

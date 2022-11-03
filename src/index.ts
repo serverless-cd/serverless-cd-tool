@@ -3,7 +3,7 @@ import path from 'path';
 import logger from './common/logger';
 import { IInput, IProps } from './common/entity';
 import * as constants from './constants';
-import { getCred, getExampleValue } from "./util";
+import { getCred } from "./util";
 import Domain from './resource/domain';
 import Ots from './resource/tablestore';
 import Oss from "./resource/oss";
@@ -38,12 +38,21 @@ export default class ComponentDemo {
       }
     }
 
+    const dbPrefix = _.get(props, 'dbPrefix', 'cd');
+
+    const omitProps = _.omit(props, ['dbPrefix', 'serviceName']);
+    const p = _.mapValues(_.defaults(omitProps, constants.OTS_DEFAULT_CONFIG), (value, key) => {
+      if (_.has(constants.OTS_DEFAULT_CONFIG, key)) {
+        return `${dbPrefix}_${value}`;
+      }
+      return value;
+    });
+    logger.debug(`transform ots values: ${JSON.stringify(p)}`);
+
     const credentials = await getCred(inputs);
-    const defaultValues = _.defaults(constants.OTS_DEFAULT_CONFIG, getExampleValue(cwd));
     const envConfig: IProps = {
-      ...defaultValues,
       ...constants.OTHER_DEFAULT_CONFIG,
-      ...props,
+      ...p,
       ACCOUNTID: credentials.AccountID,
       ACCESS_KEY_ID: credentials.AccessKeyID,
       ACCESS_KEY_SECRET: credentials.AccessKeySecret,
@@ -54,6 +63,7 @@ export default class ComponentDemo {
     if (_.toLower(envConfig.OSS_BUCKET) === 'auto') {
       const oss = new Oss(envConfig);
       await oss.putBucket();
+      envConfig.OSS_BUCKET = oss.bucketName;
     }
     logger.info('init bucket success');
 
@@ -70,7 +80,7 @@ export default class ComponentDemo {
         type: 'fc',
         user: envConfig.ACCOUNTID,
         region: envConfig.REGION,
-        service: envConfig.serviceName || 'serverless-cd',
+        service: _.get(props, 'serviceName', 'serverless-cd'),
         function: 'gen-domain',
       });
     } else if (_.includes(envConfig.DOMAIN, '://')) {
@@ -87,11 +97,11 @@ export default class ComponentDemo {
     _.forEach(envConfig, (value, key) => envStr += `${key}=${value || ''}\n`);
     fse.outputFileSync(envFilePath, envStr)
 
-    if (!envConfig.GITHUB_CLIENT_ID) {
-      logger.log('Please populate.env with GITHUB_CLIENT_ID before deploy', 'red');
-    }
-    if (!envConfig.GITHUB_CLIENT_SECRET) {
-      logger.log('Please populate.env with GITHUB_CLIENT_SECRET before deploy', 'red');
-    }
+    // if (!envConfig.GITHUB_CLIENT_ID) {
+    //   logger.log('Please populate.env with GITHUB_CLIENT_ID before deploy', 'red');
+    // }
+    // if (!envConfig.GITHUB_CLIENT_SECRET) {
+    //   logger.log('Please populate.env with GITHUB_CLIENT_SECRET before deploy', 'red');
+    // }
   }
 }
