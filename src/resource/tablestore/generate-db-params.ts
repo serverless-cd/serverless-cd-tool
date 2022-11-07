@@ -213,7 +213,8 @@ export const taskIndex = (tableName: string, indexName: string) => {
 /*
 Table token {
   id string [pk, increment]
-  user_id string  [ref: > user.id]
+  team_id string  [ref: > team.id]
+	cd_token string
   descripion string
   active_time string
   expire_time string
@@ -233,7 +234,7 @@ export const token = (tableName: string) => ({
 
 export const tokenIndex = (tableName: string, indexName: string) => {
   const fieldSchemas = [...TIMER_FIELD];
-  const stringKeys = ['id', 'user_id', 'descripion', 'active_time', 'expire_time'];
+  const stringKeys = ['id', 'user_id', 'team_id', 'cd_token', 'descripion', 'active_time', 'expire_time'];
   stringKeys.forEach(fieldName => fieldSchemas.push({
     ...FIELD_KEYWORD,
     fieldName,
