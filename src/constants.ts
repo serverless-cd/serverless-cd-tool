@@ -10,6 +10,8 @@ export const OTS_DEFAULT_CONFIG = {
   OTS_TOKEN_INDEX_NAME: 'token_index',
 };
 
+export const OTS_INSTANCE_NAME = 'serverless-cd';
+
 export const OTHER_DEFAULT_CONFIG = {
   SESSION_EXPIRATION: '5184000000',
   // OSS_BUCKET: 'test',
