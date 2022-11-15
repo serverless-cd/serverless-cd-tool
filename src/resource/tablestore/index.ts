@@ -103,7 +103,7 @@ export default class Ots {
     for (const { name, indexName, genTableParams, genIndexParams } of this
       .dbConfig) {
       logger.debug(`handler ${name} start`);
-      await this.handlerTable(name, genTableParams(name));
+      await this.handlerTable(name, genTableParams(name, this.envConfig));
 
       if (indexName) {
         await this.handlerIndex(
