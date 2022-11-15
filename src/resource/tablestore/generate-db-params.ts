@@ -256,12 +256,15 @@ Table session {
   updated_time timestamp
 }
 */
-export const session = (tableName: string) => ({
-  tableMeta: {
-    tableName,
-    primaryKey: [
-      { name: 'id',  type: 'STRING' },
-    ],
-  },
-  ...CREATED_OTS_DEFAULT_CONFIG,
-});
+export const session = (tableName: string, { SESSION_EXPIRATION }: any = {}) => {
+  CREATED_OTS_DEFAULT_CONFIG.tableOptions.timeToLive = (SESSION_EXPIRATION || 1000 * 60 * 60 * 24 * 7) / 1000;
+  return {
+    tableMeta: {
+      tableName,
+      primaryKey: [
+        { name: 'id',  type: 'STRING' },
+      ],
+    },
+    ...CREATED_OTS_DEFAULT_CONFIG,
+  };
+};
