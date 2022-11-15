@@ -12,29 +12,35 @@ const CREATED_OTS_DEFAULT_CONFIG = {
     },
   },
 };
-const FIELD_KEYWORD = {
-  fieldType: TableStore.FieldType.KEYWORD,
-  index: true,
-  enableSortAndAgg: true,
-  store: true,
+
+const ID_FIELD = {
+  fieldName: 'id',
+  fieldType: TableStore.FieldType.KEYWORD, // 设置字段名和字段类型。
+  index: true, // 设置开启索引。
+  enableSortAndAgg: true, // 设置开启排序与统计聚合功能。
+  store: true, // 开启后，可以直接从多元索引中读取该字段的值，而不必反查数据表，可用于查询性能优化。
+};
+
+
+function getDefinedColumn (data: Record<string, number>): { type: number; name: string; }[] {
+  return Object.keys(data).map(name => ({ name, type: data[name] }))
 }
 
-const TIMER_FIELD = [
-  {
-    fieldName: 'updated_time',
-    fieldType: TableStore.FieldType.LONG,
+function getFieldSchemas (data: Record<string, number>): {
+  fieldName: string;
+  fieldType: number;
+  index: boolean;
+  enableSortAndAgg: boolean;
+  store: boolean;
+}[] {
+  return Object.keys(data).map(fieldName => ({
     index: true,
     enableSortAndAgg: true,
     store: true,
-  },
-  {
-    fieldName: 'created_time',
-    fieldType: TableStore.FieldType.LONG,
-    index: true,
-    enableSortAndAgg: true,
-    store: true,
-  }
-];
+    fieldType: data[fieldName],
+    fieldName,
+  }))
+}
 
 /*
 Table user {
@@ -49,12 +55,23 @@ Table user {
   updated_time timestamp
 }
 */
+const USER_DEFINED_COLUMN = {
+  avatar: TableStore.DefinedColumnType.DCT_STRING, // 头像
+  username: TableStore.DefinedColumnType.DCT_STRING, // 名称
+  password: TableStore.DefinedColumnType.DCT_STRING, // 登录密码(加密)
+  secrets: TableStore.DefinedColumnType.DCT_STRING, // 个人密钥
+  third_part: TableStore.DefinedColumnType.DCT_STRING, // 三方绑定(github等)登录的信息
+  github_unionid: TableStore.DefinedColumnType.DCT_STRING, // github授权的唯一标识ID
+  created_time: TableStore.DefinedColumnType.DCT_INTEGER,
+  updated_time: TableStore.DefinedColumnType.DCT_INTEGER,
+}
 export const user = (tableName: string) => ({
   tableMeta: {
     tableName,
     primaryKey: [
       { name: 'id',  type: 'STRING' },
     ],
+    definedColumn: getDefinedColumn(USER_DEFINED_COLUMN),
   },
   ...CREATED_OTS_DEFAULT_CONFIG,
 });
@@ -64,71 +81,10 @@ export const userIndex = (tableName: string, indexName: string) => ({
   indexName,
   schema: {
     fieldSchemas: [
-      {
-        fieldName: 'id',
-        fieldType: TableStore.FieldType.KEYWORD, // 设置字段名和字段类型。
-        index: true, // 设置开启索引。
-        enableSortAndAgg: true, // 设置开启排序与统计聚合功能。
-        store: true, // 开启后，可以直接从多元索引中读取该字段的值，而不必反查数据表，可用于查询性能优化。
-      },
-      {
-        fieldName: 'github_unionid',
-        fieldType: TableStore.FieldType.KEYWORD,
-        index: true,
-        enableSortAndAgg: true,
-        store: true,
-      },
-      {
-        fieldName: 'third_part',
-        fieldType: TableStore.FieldType.KEYWORD,
-        index: true,
-        enableSortAndAgg: true,
-        store: true,
-      },
-      {
-        fieldName: 'secrets',
-        fieldType: TableStore.FieldType.KEYWORD,
-        index: true,
-        enableSortAndAgg: true,
-        store: true,
-      },
-      {
-        fieldName: 'password',
-        fieldType: TableStore.FieldType.KEYWORD,
-        index: true,
-        enableSortAndAgg: true,
-        store: true,
-      },
-      {
-        fieldName: 'username',
-        fieldType: TableStore.FieldType.KEYWORD,
-        index: true,
-        enableSortAndAgg: true,
-        store: true,
-      },
-      {
-        fieldName: 'avatar',
-        fieldType: TableStore.FieldType.KEYWORD,
-        index: true,
-        enableSortAndAgg: true,
-        store: true,
-      },
-      {
-        fieldName: 'updated_time',
-        fieldType: TableStore.FieldType.LONG,
-        index: true,
-        enableSortAndAgg: true,
-        store: true,
-      },
-      {
-        fieldName: 'created_time',
-        fieldType: TableStore.FieldType.LONG,
-        index: true,
-        enableSortAndAgg: true,
-        store: true,
-      },
+      ID_FIELD,
+      ...getFieldSchemas(USER_DEFINED_COLUMN)
     ]
-  }
+  },
 });
 
 /*
@@ -147,31 +103,41 @@ Table application {
   updated_time timestamp
 }
 */
+const APP_DEFINED_COLUMN = {
+  user_id: TableStore.DefinedColumnType.DCT_STRING,
+  owner: TableStore.DefinedColumnType.DCT_STRING,
+  provider: TableStore.DefinedColumnType.DCT_STRING,
+  provider_repo_id: TableStore.DefinedColumnType.DCT_STRING,
+  repo_name: TableStore.DefinedColumnType.DCT_STRING,
+  repo_url: TableStore.DefinedColumnType.DCT_STRING,
+  secrets: TableStore.DefinedColumnType.DCT_STRING,
+  latest_task: TableStore.DefinedColumnType.DCT_STRING,
+  trigger_spec: TableStore.DefinedColumnType.DCT_STRING,
+  created_time: TableStore.DefinedColumnType.DCT_INTEGER,
+  updated_time: TableStore.DefinedColumnType.DCT_INTEGER,
+}
+
 export const application = (tableName: string) => ({
   tableMeta: {
     tableName,
     primaryKey: [
       { name: 'id',  type: 'STRING' },
     ],
+    definedColumn: getDefinedColumn(APP_DEFINED_COLUMN),
   },
   ...CREATED_OTS_DEFAULT_CONFIG,
 });
 
-export const applicationIndex = (tableName: string, indexName: string) => {
-  const fieldSchemas = [...TIMER_FIELD];
-  const stringKeys = ['id', 'user_id', 'owner', 'provider', 'provider_repo_id', 'repo_name', 'repo_url', 'secrets', 'latest_task', 'trigger_spec'];
-  stringKeys.forEach(fieldName => fieldSchemas.push({
-    ...FIELD_KEYWORD,
-    fieldName,
-  }));
-
-  return {
-    tableName,
-    indexName,
-    schema: { fieldSchemas },
-  }
-}
-
+export const applicationIndex = (tableName: string, indexName: string) => ({
+  tableName,
+  indexName,
+  schema: {
+    fieldSchemas: [
+      ID_FIELD,
+      ...getFieldSchemas(APP_DEFINED_COLUMN)
+    ]
+  },
+})
 
 /*
 Table task {
@@ -185,30 +151,37 @@ Table task {
   updated_time timestamp
 }
 */
+const TASK_DEFINED_COLUMN = {
+  user_id: TableStore.DefinedColumnType.DCT_STRING,
+  app_id: TableStore.DefinedColumnType.DCT_STRING,
+  status: TableStore.DefinedColumnType.DCT_STRING,
+  steps: TableStore.DefinedColumnType.DCT_STRING,
+  trigger_payload: TableStore.DefinedColumnType.DCT_STRING,
+  created_time: TableStore.DefinedColumnType.DCT_INTEGER,
+  updated_time: TableStore.DefinedColumnType.DCT_INTEGER,
+}
 export const task = (tableName: string) => ({
   tableMeta: {
     tableName,
     primaryKey: [
       { name: 'id',  type: 'STRING' },
     ],
+    definedColumn: getDefinedColumn(TASK_DEFINED_COLUMN),
   },
   ...CREATED_OTS_DEFAULT_CONFIG,
 });
 
-export const taskIndex = (tableName: string, indexName: string) => {
-  const fieldSchemas = [...TIMER_FIELD];
-  const stringKeys = ['id', 'user_id', 'app_id', 'status', 'steps', 'trigger_payload'];
-  stringKeys.forEach(fieldName => fieldSchemas.push({
-    ...FIELD_KEYWORD,
-    fieldName,
-  }))
+export const taskIndex = (tableName: string, indexName: string) => ({
+  tableName,
+  indexName,
+  schema: {
+    fieldSchemas: [
+      ID_FIELD,
+      ...getFieldSchemas(TASK_DEFINED_COLUMN)
+    ]
+  },
+})
 
-  return {
-    tableName,
-    indexName,
-    schema: { fieldSchemas },
-  }
-}
 
 /*
 Table token {
@@ -222,30 +195,36 @@ Table token {
   updated_time timestamp
 }
 */
+const TOKEN_DEFINED_COLUMN = {
+  team_id: TableStore.DefinedColumnType.DCT_STRING,
+	cd_token: TableStore.DefinedColumnType.DCT_STRING,
+  descripion: TableStore.DefinedColumnType.DCT_STRING,
+  active_time: TableStore.DefinedColumnType.DCT_STRING,
+  expire_time: TableStore.DefinedColumnType.DCT_STRING,
+  created_time: TableStore.DefinedColumnType.DCT_INTEGER,
+  updated_time: TableStore.DefinedColumnType.DCT_INTEGER,
+}
 export const token = (tableName: string) => ({
   tableMeta: {
     tableName,
     primaryKey: [
       { name: 'id',  type: 'STRING' },
     ],
+    definedColumn: getDefinedColumn(TOKEN_DEFINED_COLUMN),
   },
   ...CREATED_OTS_DEFAULT_CONFIG,
 });
 
-export const tokenIndex = (tableName: string, indexName: string) => {
-  const fieldSchemas = [...TIMER_FIELD];
-  const stringKeys = ['id', 'user_id', 'team_id', 'cd_token', 'descripion', 'active_time', 'expire_time'];
-  stringKeys.forEach(fieldName => fieldSchemas.push({
-    ...FIELD_KEYWORD,
-    fieldName,
-  }))
-
-  return {
-    tableName,
-    indexName,
-    schema: { fieldSchemas },
-  }
-}
+export const tokenIndex = (tableName: string, indexName: string) => ({
+  tableName,
+  indexName,
+  schema: {
+    fieldSchemas: [
+      ID_FIELD,
+      ...getFieldSchemas(TOKEN_DEFINED_COLUMN)
+    ]
+  },
+})
 
 /*
 Table session {
@@ -256,6 +235,12 @@ Table session {
   updated_time timestamp
 }
 */
+const SESSION_DEFINED_COLUMN = {
+  session_data: TableStore.DefinedColumnType.DCT_STRING,
+  expire_time: TableStore.DefinedColumnType.DCT_STRING,
+  created_time: TableStore.DefinedColumnType.DCT_INTEGER,
+  updated_time: TableStore.DefinedColumnType.DCT_INTEGER,
+}
 export const session = (tableName: string, { SESSION_EXPIRATION }: any = {}) => {
   CREATED_OTS_DEFAULT_CONFIG.tableOptions.timeToLive = (SESSION_EXPIRATION || 1000 * 60 * 60 * 24 * 7) / 1000;
   return {
@@ -264,6 +249,7 @@ export const session = (tableName: string, { SESSION_EXPIRATION }: any = {}) => 
       primaryKey: [
         { name: 'id',  type: 'STRING' },
       ],
+      definedColumn: getDefinedColumn(SESSION_DEFINED_COLUMN),
     },
     ...CREATED_OTS_DEFAULT_CONFIG,
   };

@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "@types/node": "^14.0.23",
+    "@types/tablestore": "^5.1.0",
     "esbuild": "^0.13.8",
     "rimraf": "^3.0.2",
     "ts-node": "^8.10.2",
