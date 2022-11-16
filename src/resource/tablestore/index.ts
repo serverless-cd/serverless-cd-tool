@@ -6,11 +6,17 @@ import * as generateDbParams from "./generate-db-params";
 import logger from "../../common/logger";
 import { OTS_INSTANCE_NAME } from "../../constants";
 
+enum OtsAccess {
+  OTS = 'ots',
+  TABLE_STORE = 'tablestore',
+}
+
 export default class Ots {
   client: Client;
   popClient: any;
   dbConfig: any;
   envConfig: any;
+  endpoint: string;
 
   constructor(envConfig: IProps) {
     this.envConfig = envConfig;
@@ -20,15 +26,7 @@ export default class Ots {
       endpoint: `https://ots.${envConfig.REGION}.aliyuncs.com`,
       apiVersion: "2016-06-20",
     });
-
-    this.client = new Client({
-      accessKeyId: envConfig.ACCESS_KEY_ID,
-      accessKeySecret: envConfig.ACCESS_KEY_SECRET,
-      // securityToken: credentials.SecurityToken,
-      endpoint: `https://${envConfig.OTS_INSTANCE_NAME}.${envConfig.REGION}.ots.aliyuncs.com`,
-      instancename: envConfig.OTS_INSTANCE_NAME,
-      maxRetries: 20, // 默认20次重试，可以省略此参数。
-    });
+    this.makeClient();
 
     this.dbConfig = [
       {
@@ -60,6 +58,20 @@ export default class Ots {
         genTableParams: generateDbParams.session,
       },
     ];
+  }
+
+  makeClient(access: OtsAccess = OtsAccess.OTS) {
+    const envConfig = this.envConfig;
+    this.endpoint = `https://${envConfig.OTS_INSTANCE_NAME}.${envConfig.REGION}.${access}.aliyuncs.com`;
+
+    this.client = new Client({
+      accessKeyId: envConfig.ACCESS_KEY_ID,
+      accessKeySecret: envConfig.ACCESS_KEY_SECRET,
+      // securityToken: credentials.SecurityToken,
+      endpoint: this.endpoint,
+      instancename: envConfig.OTS_INSTANCE_NAME,
+      maxRetries: 20, // 默认20次重试，可以省略此参数。
+    });
   }
 
   // 初始化实例
@@ -103,7 +115,17 @@ export default class Ots {
     for (const { name, indexName, genTableParams, genIndexParams } of this
       .dbConfig) {
       logger.debug(`handler ${name} start`);
-      await this.handlerTable(name, genTableParams(name, this.envConfig));
+      try {
+        await this.handlerTable(name, genTableParams(name, this.envConfig));
+      } catch (ex) {
+        logger.debug(`handler table error: ${ex.message}`);
+        if (ex?.code === 'NetworkingError' && ex?.message.startsWith('getaddrinfo ENOTFOUND')) {
+          this.makeClient(OtsAccess.TABLE_STORE);
+          await this.handlerTable(name, genTableParams(name, this.envConfig));
+        } else {
+          throw ex;
+        }
+      }
 
       if (indexName) {
         await this.handlerIndex(
