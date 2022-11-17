@@ -91,6 +91,7 @@ export const userIndex = (tableName: string, indexName: string) => ({
 Table application {
   id string [pk, increment]
   user_id string  [ref: > user.id]
+  description string
   owner string // github仓库登录的owner
   provider string // git代码托管厂商：github,gitee,gitlab,codeup
   provider_repo_id string // git代码repo唯一ID
@@ -153,6 +154,7 @@ Table task {
 */
 const TASK_DEFINED_COLUMN = {
   user_id: TableStore.DefinedColumnType.DCT_STRING,
+  description: TableStore.DefinedColumnType.DCT_STRING,
   app_id: TableStore.DefinedColumnType.DCT_STRING,
   status: TableStore.DefinedColumnType.DCT_STRING,
   steps: TableStore.DefinedColumnType.DCT_STRING,
@@ -187,8 +189,9 @@ export const taskIndex = (tableName: string, indexName: string) => ({
 Table token {
   id string [pk, increment]
   team_id string  [ref: > team.id]
+  user_id string  [ref: > user.id]
 	cd_token string
-  descripion string
+  description string
   active_time string
   expire_time string
   created_time timestamp
@@ -197,8 +200,9 @@ Table token {
 */
 const TOKEN_DEFINED_COLUMN = {
   team_id: TableStore.DefinedColumnType.DCT_STRING,
+  user_id: TableStore.DefinedColumnType.DCT_STRING,
 	cd_token: TableStore.DefinedColumnType.DCT_STRING,
-  descripion: TableStore.DefinedColumnType.DCT_STRING,
+  description: TableStore.DefinedColumnType.DCT_STRING,
   active_time: TableStore.DefinedColumnType.DCT_STRING,
   expire_time: TableStore.DefinedColumnType.DCT_STRING,
   created_time: TableStore.DefinedColumnType.DCT_INTEGER,
