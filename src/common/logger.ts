@@ -1,5 +1,5 @@
 import { Logger } from '@serverless-devs/core';
 
-const logger = new Logger('cd-generate');
+const logger = new Logger('serverless-cd-tool');
 
 export default logger;

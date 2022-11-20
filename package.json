@@ -1,7 +1,7 @@
 {
-  "name": "cd-generate",
+  "name": "serverless-cd-tool",
   "version": "0.0.1",
-  "description": "This is a component demo for Serverless Devs Tool ",
+  "description": "Serverless-cd 工具箱",
   "autoInstall": false,
   "homepage": "https://www.serverless-devs.com",
   "author": "Serverless-Devs",
@@ -12,11 +12,8 @@
     "access": "public"
   },
   "keywords": [
-    "Serverless",
-    "Framework",
-    "Serverless-Devs",
-    "Serverless-Tool",
-    "Function Compute"
+    "serverless",
+    "serverless-cd"
   ],
   "scripts": {
     "start": "npm run watch",

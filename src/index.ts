@@ -7,10 +7,12 @@ import { getCred } from "./util";
 import Domain from "./resource/domain";
 import Ots from "./resource/tablestore";
 import Oss from "./resource/oss";
+import devService from "./service/dev";
+import updateService from "./service/update";
 
-export default class CdGenerate {
+export default class SevrerlessCdTool {
   /**
-   * demo 实例
+   * 云资源创建
    * @param inputs
    * @returns
    */
@@ -97,13 +99,31 @@ export default class CdGenerate {
     let envStr = "";
     _.forEach(envConfig, (value, key) => (envStr += `${key}=${value || ""}\n`));
     fse.outputFileSync(envFilePath, envStr);
+  }
 
-    // if (!envConfig.GITHUB_CLIENT_ID) {
-    //   logger.log('Please populate.env with GITHUB_CLIENT_ID before deploy', 'red');
-    // }
-    // if (!envConfig.GITHUB_CLIENT_SECRET) {
-    //   logger.log('Please populate.env with GITHUB_CLIENT_SECRET before deploy', 'red');
-    // }
+  /**
+   * 本地Dev开发
+   * @param inputs
+   */
+  public async dev(inputs: IInput) {
+    logger.debug(`input: ${JSON.stringify(inputs.props)}`);
+    const hasHelp = devService.hasCommandHelp(inputs);
+    if (hasHelp) {
+      return;
+    }
+
+    const configPath = _.get(inputs, "path.configPath");
+    await devService.checkEnv(configPath);
+    await devService.replaceTemplateWithEnv(configPath, inputs);
+  }
+
+  public async update(inputs: IInput) {
+    logger.debug(`input: ${JSON.stringify(inputs.props)}`);
+    const hasHelp = updateService.hasCommandHelp(inputs);
+    if (hasHelp) {
+      return;
+    }
+    await updateService.updateService(inputs);
   }
 }
 
