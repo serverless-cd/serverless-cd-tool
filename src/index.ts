@@ -115,6 +115,7 @@ export default class SevrerlessCdTool {
     const configPath = _.get(inputs, "path.configPath");
     await devService.checkEnv(configPath);
     await devService.replaceTemplateWithEnv(configPath, inputs);
+    logger.info("s.dev.yaml 配置成功，请执行 s deploy -t s.dev.yaml 进行应用部署");
   }
 
   public async update(inputs: IInput) {
