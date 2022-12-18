@@ -101,7 +101,7 @@ export default class Ots {
     logger.debug(`Create Instance ${instanceName} Start...`);
     await popClient.request(
       "InsertInstance",
-      { InstanceName: instanceName },
+      { InstanceName: instanceName, ClusterType: "HYBRID" },
       {
         method: "POST",
         formatParams: false,
