@@ -55,4 +55,5 @@ export interface IProps {
   OTS_SESSION_TABLE_NAME?: string;
   GITHUB_CLIENT_ID?: string;
   GITHUB_CLIENT_SECRET?: string;
+  COOKIE_SECRET?: string;
 }
