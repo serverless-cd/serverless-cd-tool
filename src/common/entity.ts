@@ -52,7 +52,6 @@ export interface IProps {
   OTS_APP_INDEX_NAME?: string;
   OTS_TOKEN_TABLE_NAME?: string;
   OTS_TOKEN_INDEX_NAME?: string;
-  OTS_SESSION_TABLE_NAME?: string;
   GITHUB_CLIENT_ID?: string;
   GITHUB_CLIENT_SECRET?: string;
   COOKIE_SECRET?: string;
