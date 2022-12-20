@@ -53,10 +53,6 @@ export default class Ots {
         genTableParams: generateDbParams.token,
         genIndexParams: generateDbParams.tokenIndex,
       },
-      {
-        name: envConfig.OTS_SESSION_TABLE_NAME,
-        genTableParams: generateDbParams.session,
-      },
     ];
   }
 
@@ -91,8 +87,8 @@ export default class Ots {
         }
       );
       isExistInstance = true;
-    } catch (error) {}
-    
+    } catch (error) { }
+
     if (isExistInstance) {
       logger.debug(`Ots Instance Exist ${instanceName} Exist`);
       logger.info(`Init Ots Instance ${instanceName} Success`);

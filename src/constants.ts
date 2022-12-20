@@ -19,4 +19,5 @@ export const OTHER_DEFAULT_CONFIG = {
   CD_PIPLINE_YAML: 'serverless-pipeline.yaml',
   GITHUB_CLIENT_ID: '',
   GITHUB_CLIENT_SECRET: '',
+  COOKIE_SECRET: Math.random().toString(16).substr(2),
 };

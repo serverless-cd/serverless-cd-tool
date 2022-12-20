@@ -22,11 +22,11 @@ const ID_FIELD = {
 };
 
 
-function getDefinedColumn (data: Record<string, number>): { type: number; name: string; }[] {
+function getDefinedColumn(data: Record<string, number>): { type: number; name: string; }[] {
   return Object.keys(data).map(name => ({ name, type: data[name] }))
 }
 
-function getFieldSchemas (data: Record<string, number>): {
+function getFieldSchemas(data: Record<string, number>): {
   fieldName: string;
   fieldType: number;
   index: boolean;
@@ -69,7 +69,7 @@ export const user = (tableName: string) => ({
   tableMeta: {
     tableName,
     primaryKey: [
-      { name: 'id',  type: 'STRING' },
+      { name: 'id', type: 'STRING' },
     ],
     definedColumn: getDefinedColumn(USER_DEFINED_COLUMN),
   },
@@ -106,6 +106,7 @@ Table application {
 */
 const APP_DEFINED_COLUMN = {
   user_id: TableStore.DefinedColumnType.DCT_STRING,
+  webhook_id: TableStore.DefinedColumnType.DCT_STRING,
   owner: TableStore.DefinedColumnType.DCT_STRING,
   provider: TableStore.DefinedColumnType.DCT_STRING,
   provider_repo_id: TableStore.DefinedColumnType.DCT_STRING,
@@ -122,7 +123,7 @@ export const application = (tableName: string) => ({
   tableMeta: {
     tableName,
     primaryKey: [
-      { name: 'id',  type: 'STRING' },
+      { name: 'id', type: 'STRING' },
     ],
     definedColumn: getDefinedColumn(APP_DEFINED_COLUMN),
   },
@@ -166,7 +167,7 @@ export const task = (tableName: string) => ({
   tableMeta: {
     tableName,
     primaryKey: [
-      { name: 'id',  type: 'STRING' },
+      { name: 'id', type: 'STRING' },
     ],
     definedColumn: getDefinedColumn(TASK_DEFINED_COLUMN),
   },
@@ -190,7 +191,7 @@ Table token {
   id string [pk, increment]
   team_id string  [ref: > team.id]
   user_id string  [ref: > user.id]
-	cd_token string
+  cd_token string
   description string
   active_time string
   expire_time string
@@ -201,7 +202,7 @@ Table token {
 const TOKEN_DEFINED_COLUMN = {
   team_id: TableStore.DefinedColumnType.DCT_STRING,
   user_id: TableStore.DefinedColumnType.DCT_STRING,
-	cd_token: TableStore.DefinedColumnType.DCT_STRING,
+  cd_token: TableStore.DefinedColumnType.DCT_STRING,
   description: TableStore.DefinedColumnType.DCT_STRING,
   active_time: TableStore.DefinedColumnType.DCT_STRING,
   expire_time: TableStore.DefinedColumnType.DCT_STRING,
@@ -212,7 +213,7 @@ export const token = (tableName: string) => ({
   tableMeta: {
     tableName,
     primaryKey: [
-      { name: 'id',  type: 'STRING' },
+      { name: 'id', type: 'STRING' },
     ],
     definedColumn: getDefinedColumn(TOKEN_DEFINED_COLUMN),
   },
@@ -229,32 +230,3 @@ export const tokenIndex = (tableName: string, indexName: string) => ({
     ]
   },
 })
-
-/*
-Table session {
-  id string [pk, increment]
-  session_data string
-  expire_time string
-  created_time timestamp
-  updated_time timestamp
-}
-*/
-const SESSION_DEFINED_COLUMN = {
-  session_data: TableStore.DefinedColumnType.DCT_STRING,
-  expire_time: TableStore.DefinedColumnType.DCT_STRING,
-  created_time: TableStore.DefinedColumnType.DCT_INTEGER,
-  updated_time: TableStore.DefinedColumnType.DCT_INTEGER,
-}
-export const session = (tableName: string, { SESSION_EXPIRATION }: any = {}) => {
-  CREATED_OTS_DEFAULT_CONFIG.tableOptions.timeToLive = (SESSION_EXPIRATION || 1000 * 60 * 60 * 24 * 7) / 1000;
-  return {
-    tableMeta: {
-      tableName,
-      primaryKey: [
-        { name: 'id',  type: 'STRING' },
-      ],
-      definedColumn: getDefinedColumn(SESSION_DEFINED_COLUMN),
-    },
-    ...CREATED_OTS_DEFAULT_CONFIG,
-  };
-};
