@@ -54,13 +54,11 @@ export default class SevrerlessCdTool {
     logger.debug(`transform ots values: ${JSON.stringify(p)}`);
 
     const credentials = await getCred(inputs);
-    const envConfig: IProps = {
-      ...constants.OTHER_DEFAULT_CONFIG,
-      ...p,
+    const envConfig: IProps = _.merge(constants.OTHER_DEFAULT_CONFIG, p, {
       ACCOUNTID: credentials.AccountID,
       ACCESS_KEY_ID: credentials.AccessKeyID,
       ACCESS_KEY_SECRET: credentials.AccessKeySecret,
-    };
+    });
 
     logger.info("init bucket start");
     if (_.toLower(envConfig.OSS_BUCKET) === "auto") {
@@ -115,7 +113,9 @@ export default class SevrerlessCdTool {
     const configPath = _.get(inputs, "path.configPath");
     await devService.checkEnv(configPath);
     await devService.replaceTemplateWithEnv(configPath, inputs);
-    logger.info("s.dev.yaml 配置成功，请执行 s deploy -t s.dev.yaml 进行应用部署");
+    logger.info(
+      "s.dev.yaml 配置成功，请执行 s deploy -t s.dev.yaml 进行应用部署"
+    );
   }
 
   public async update(inputs: IInput) {
